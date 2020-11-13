@@ -1,0 +1,120 @@
+RESUMO CONCORRÊNCIA
+
+"Objetos são abstrações de procedimento. Threads são abstrações de agendamento." - James O. Coplien
+
+Escrever programas limpos é difícil. É muito mais fácil criar um código que execute uma única thread ou um código multithread bom superficialmente,
+mas que está defeituoso em um nível mais baixo. Esse código funciona bem até ser usado excessivamente.
+
+Concorrência é uma estratégia de desacoplamento, ou seja, desacopla o que é desenvolvido de quando é desenvolvido. De uma perspectiva estruturada, o aplicativo
+seria mais como muitos minicomputadores trabalhando juntos do que um único e grande main ().
+Considerando o modelo "Servlet", cada execução ocorre em seu próprio mundo e fica desacoplado de todas as execuções de outros servlets. Os programadores
+de servlets têm de estar bem atentos de modo a garantir que seus programas concorrentes desejados corretos. Mesmo assim, as vantagens do modelo servlet são
+relevantes. Desejo um agregador de informações que obtem dados de diferentes sites da Web, como o sistema possui somente uma thread, ele consulta
+um site de cada vez, portanto, se mais sites for prioridade a busca mais tempo irá demorar para obter os dados. Poderíamos melhorar o desempenho usando
+um algoritmo multithread que consulte mais de um website por vez.
+
+MITOS E CONCEITOS EQUIVOCADOS:
+
+- A concorrência sempre melhora o desemepnho.
+	Isso pode ocorrer sim, mas só quando houver um tempo de espera muito grande que pode ser dividido entre threads.
+
+- O projeto não muda ao criar programas concorrentes.
+	O projeto de um algoritmo concorrente pode ser consideravelmente diferente de um projeto mono thread.
+
+- Entende as questões de concorrência não é importante quando se trabalha com um contêiner como um da Web ou um EJB.
+	É melhor saber apenas o que seu contêiner está fazendo e como protegê-lo das questões de atualização da concorrência e fazer deadlock.
+
+FATOS E CONCEITOS CORRETOS:
+
+- A concorrência gera um certo aumento no desempenho e na criação de código adicional;
+- Uma correta correta é complexa, mesmo para problemas simples;
+- Os bugs de comummente não se repetem, portanto são frequentes ignorados como casos únicos em vez dos defeitos que realmente representam;
+- A concorrência geralmente requer uma mudança essencial na estrátegia do projeto.
+
+PRINCIPIO DA RESPONSABILIDADE ÚNICA (SRP5):
+
+- O código voltado para a concorrência possui seu próprio ciclo de desenvolvimento, ateração e otimização;
+- O código voltado para a concorrência possui seus desafios próprios, que são diferentes e mais difícies do que o código não voltado para a concorrência;
+- O número de maneiras pelas quais um código voltado para a concorrência pode ser escrito de forma errado é desafiar o bastante sem o peso extra do código
+de aplicação que o cerca.
+
+	* Recomendação: Mantenha seu código voltado para um seprado de concorrência do resto do código.
+
+DICAS PARA PROTEÇÃO DO CÓDIGO CONCORRENTE:
+
+- Limite ou escopo dos dados;
+
+- Utilizar cópias dos dados;
+
+- Use como threads de forma mais independentes possíveis, sem compartilhamento de dados com outras threads;
+
+- Conheça sua biblioteca:
+	¬ Use como coleções seguras para threads fornecidas;
+	¬ Use o framework Executor para realizar tarefas não relacionadas;
+	¬ usar soluções non-blocking sempre que possível;
+	¬ Classes de bibliotecas que não são seguras para threads.
+
+- Use coleções seguras para threads:
+	¬ ReentrantLock: bloqueio que pode ser colocado em um método e liberado em outro.
+	¬ Semaphore: implementação do semáforo clássico, um bloqueio com um contador.
+	¬ CountDownLatch: bloqueio que espera por um número de eventos antes de liberar todas as threads em espera. Isso permite que todas as threads tenham
+	uma mesma chance de iniciar quase ao mesmo tempo.
+
+	* Recomendação: Revise as classes disponíveis para você. No caso do Java, familiarize-se com as classes java.util.concurrent, java.util.concurrent.atomic e
+	java.util.concurrent.locks.
+
+- Conheça seus métodos de execução:
+	¬ Recursos vinculados: recursos de um tamanho ou número fixo usado em um ambiente concorrente.
+		• Conexões de DB e Buffers de leitura / escrita de tamanho fixos são exemplos.
+	¬ Exclusão mútua: apenas um thread de cada vez pode acessar dados ou recursos compartilhados.
+	¬ Starvation: uma thread ou um grupo de threads não pode prosseguir por um tempo excessivamente longo ou indefinidamente.
+	¬ Deadlock: duas ou mais threads disponibilizam que a outra termine. Cada thread possui um recurso que a outra precisa e nenhuma delas pode terminar até obter o tal recurso.
+	¬ Livelock: threads num entrave, cada uma tentando fazer seu trabalho, mas se deparando com outras "no caminho". Aguardando à repercussão, enquanto os fios continuam tentando 
+	progredir, mas não consegue por um tempo excessivamente longo ou indefinido.
+
+- Tenha cuidado com dependências entre métodos sincronizados
+	¬ Evite usar mais de um método em um objeto compartilhado.
+	¬ Bloqueio voltado para o cliente.
+	¬ Bloqueio voltado para o servidor.
+	¬ Servidor extra.
+
+
+TESTE DE CÓDIGO COM THREADS
+
+Considere que o código está correto é impossível. Testes não garanem que tudo está correto. Enquanto houver duas ou mais threads usando o mesmo código e trabalhando com os
+mesmos dados compartilhados, como coisas se tornam consideravelmente mais complexas.
+
+- Trate falhas, falsas como questões relacionadas às threads;
+	¬ O código que usa threads causa falhas em coisas que simplesmente não falham. Os bugs em códigos com tópicos podem mostrar seus sintomas uma vez que a cada mil ou milhares
+	de execuções.
+
+- Primeiro, faça com que seu código sem thread funcione;
+	¬ Faça com que seu código sem thread funcione, isso é óbvio. Verifique se o código funciona sem threads. Ser, isso significa criar POJOs que são
+	chamados pelas suas threads.
+
+- Torne seu código com threads portáteis;
+	¬ Criar o código que o suporte comum de modo que pode ser criado em diversas configurações.
+
+- Torne seu código com threads ajustável;
+	¬ Obter o equílibrio certo entre as threads requer testar e errar. O quanto antes, encontre maneiras de cronometrar o desempenho de seu sistema sob variadas configurações.
+
+- Rode com mais threads do que ligou;
+	¬ Coisas acontecem quando o sistema alterna entre as tarefas. A fim de incentivar a troca de tarefas, executar mais threads do que os reconheço ou núcleos presentes.
+
+- Rode em diferentes plataformas;
+	¬ Execute o quanto antres e frequentemente seu código com threads em todas as plataformas finais, para garantir que não existam falhas ou bugs que não existem em uma plataforma
+	mas existem em outra.
+
+- Altere seu código para testar e forçar falhar.
+	¬ É normal que falhas se escondam em códigos concorrentes. Altere seu código manualmente ou automazidamente e force-o a rodar em diferentes situações através da adição de adição
+	de chamadas a métodos como por exemplo: Obeject.wait (), Object.sleep (), Object.yield () ou Object.priority ().
+
+CONCLUSÃO
+
+É difícil conseguir um código conocrrente correto. Primeiro e acima de tudo, siga sempre o Princípio da Respnsabilidade Única. Divida seu sistema em POJOs que separa o código que enxerga
+tópicos daquele que como ignora. Tenha em mente como possíveis fontes de problema com concorrência: threads multiplas operando em dados compartilhados ou usando uma fonte de recursos em comum.
+Casos de limites, como desligar adequadamente ou terminar a iteração de um loop, pode ser um risco a mais.
+Estude e conheça a sua biblioteca e os alogoritmos essenciais. Aprenda como encontrar partes do código que devem ser bloqueadas e como bloqueie. Evite chamar uma seção bloqueada a partir de outra,
+pois isto requer grande entendimeto de algo deve ou não ser compartilhado. E tenha em mente que problemas novso sempre surgirão.
+Você pode mlehorar consideravelmente suas chances de encontrar erros se rastrear seu tempo de manipulação de seu código. É melhor ter construído seu código com threads o máximo possível antes de modelagem-lo
+na fase de produção.
